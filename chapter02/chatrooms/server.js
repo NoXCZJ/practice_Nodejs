@@ -2,6 +2,7 @@ var http = require("http");
 var fs = require("fs");
 var path = require("path");
 var mime = require("mime");
+var chatServer = require("./lib/chat_server");
 
 var cache = [];//用来缓存文件内容的对象
 
@@ -11,11 +12,13 @@ var server = http.createServer(function(request, response) {
 	if(request.url == "/"){
 		filePath = "public/index.html";
 	}else{
-		filePath = "/" + request.url;
+		filePath = "/public" + request.url;
 	}
 	var absPath = "./" + filePath;
 	sendStatic(response, cache, absPath);
 });
+
+chatServer.listen(server);
 
 server.listen(3000, function() {
 	console.log("Server listening on port 3000.");
@@ -32,7 +35,7 @@ function sendFile (response, filePath, fileContents) {
 	response.writeHead(200, 
 		{'Content-Type': mime.lookup(path.basename(filePath))}
 	);
-	response.end(fileContnets);
+	response.end(fileContents);
 }
 /*提供静态文件服务*/
 function sendStatic (response, cache, absPath) {
